@@ -1,45 +1,53 @@
+from numbers import Number
+
 class FunctionBuilder:
     """umm...
 
     Examples:
-    >>> x = FunctionBuilder()
+    >>> x = FunctionBuilder('x')
     >>> f = (x + 5) * (x - 3)
     >>> f
     ((x + 5) * (x - 3))
-    >>> f(0)
+    >>> f(x=0)
     -15
-    >>> f(3)
+    >>> f(x=3)
     0
-    >>> f(4)
+    >>> f(x=4)
     9
-    >>> f(5)
+    >>> f(x=5)
     20
 
     >>> f = x**2 - 4 * x + 4
     >>> f
     (((x ** 2) - (4 * x)) + 4)
-    >>> f(0)
+    >>> f(x=0)
     4
-    >>> f(2)
+    >>> f(x=2)
     0
-    >>> f(6)
+    >>> f(x=6)
     16
 
     >>> f = 5 - (x % 8 + 17 // x)
     >>> f
     (5 - ((x % 8) + (17 // x)))
-    >>> f(4)
+    >>> f(x=4)
     -3
+
+    >>> x = FunctionBuilder('x')
+    >>> y = FunctionBuilder('y')
+    >>> f = 4*x - y**2 + y//7
+    >>> f(x=2, y=8)
+    -55
 
     """
     __slots__ = ('_operations', 'name')
 
-    def __init__(self, name="x"):
+    def __init__(self, name):
         self._operations = []
         self.name = name
 
     def __copy__(self):
-        f = FunctionBuilder()
+        f = FunctionBuilder(self.name)
         f._operations = self._operations[:]
         return f
 
@@ -52,11 +60,11 @@ class FunctionBuilder:
                 s = '({} {} {})'.format(s, op, other)
         return s
 
-    def __call__(self, x):
-        result = x
+    def __call__(self, **kwargs):
+        result = kwargs[self.name]
         for op, other in self._operations:
             if isinstance(other, FunctionBuilder):
-                other = other(x)
+                other = other(**kwargs)
             if op == '+':
                 result = result + other
             elif op == '+r':
