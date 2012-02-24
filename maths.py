@@ -1,3 +1,4 @@
+import inspect
 from numbers import Number
 
 class FunctionBuilder:
@@ -6,8 +7,6 @@ class FunctionBuilder:
     Examples:
     >>> x = FunctionBuilder('x')
     >>> f = (x + 5) * (x - 3)
-    >>> f
-    ((x + 5) * (x - 3))
     >>> f(x=0)
     -15
     >>> f(x=3)
@@ -18,8 +17,6 @@ class FunctionBuilder:
     20
 
     >>> f = x**2 - 4 * x + 4
-    >>> f
-    (((x ** 2) - (4 * x)) + 4)
     >>> f(x=0)
     4
     >>> f(x=2)
@@ -28,8 +25,6 @@ class FunctionBuilder:
     16
 
     >>> f = 5 - (x % 8 + 17 // x)
-    >>> f
-    (5 - ((x % 8) + (17 // x)))
     >>> f(x=4)
     -3
 
@@ -51,121 +46,38 @@ class FunctionBuilder:
         f._operations = self._operations[:]
         return f
 
-    def __repr__(self):
-        s = self.name
-        for op, other in self._operations:
-            if op[-1] == 'r':
-                s = '({} {} {})'.format(other, op[:-1], s)
-            else:
-                s = '({} {} {})'.format(s, op, other)
-        return s
-
     def __call__(self, **kwargs):
         result = kwargs[self.name]
         for op, other in self._operations:
             if isinstance(other, FunctionBuilder):
                 other = other(**kwargs)
-            if op == '+':
-                result = result + other
-            elif op == '+r':
-                result = other + result
-            elif op == '-':
-                result = result - other
-            elif op == '-r':
-                result = other - result
-            elif op == '*':
-                result = result * other
-            elif op == '*r':
-                result = other * result
-            elif op == '/':
-                result = result / other
-            elif op == '/r':
-                result = other / result
-            elif op == '//':
-                result = result // other
-            elif op == '//r':
-                result = other // result
-            elif op == '%':
-                result = result % other
-            elif op == '%r':
-                result = other % result
-            elif op == '**':
-                result = result ** other
-            elif op == '**r':
-                result = other ** result
-            else:
-                raise ValueError("Invalid operation: {}".format(op))
+            result = op(result, other)
         return result
 
-    def __add__(self, other):
-        f = self.__copy__()
-        f._operations.append(('+', other))
-        return f
+    def _(func):
+        def fred_johnson(self, other):
+            f = self.__copy__()
+            f._operations.append((func, other))
+            return f
+        return fred_johnson
 
-    def __radd__(self, other):
-        f = self.__copy__()
-        f._operations.append(('+r', other))
-        return f
+    __add__ = _(lambda x, y: x + y)
+    __radd__ = _(lambda x, y: y + x)
+    __sub__ = _(lambda x, y: x - y)
+    __rsub__ = _(lambda x, y: y - x)
+    __mul__ = _(lambda x, y: x * y)
+    __rmul__ = _(lambda x, y: y * x)
+    __truediv__ = _(lambda x, y: x / y)
+    __rtruediv__ = _(lambda x, y: y / x)
+    __floordiv__ = _(lambda x, y: x // y)
+    __rfloordiv__ = _(lambda x, y: y // x)
+    __mod__ = _(lambda x, y: x % y)
+    __rmod__ = _(lambda x, y: y % x)
+    __pow__ = _(lambda x, y: x ** y)
+    __rpow__ = _(lambda x, y: y ** x)
 
-    def __sub__(self, other):
-        f = self.__copy__()
-        f._operations.append(('-', other))
-        return f
-
-    def __rsub__(self, other):
-        f = self.__copy__()
-        f._operations.append(('-r', other))
-        return f
-
-    def __mul__(self, other):
-        f = self.__copy__()
-        f._operations.append(('*', other))
-        return f
-
-    def __rmul__(self, other):
-        f = self.__copy__()
-        f._operations.append(('*r', other))
-        return f
-
-    def __truediv__(self, other):
-        f = self.__copy__()
-        f._operations.append(('/', other))
-        return f
-
-    def __rtruediv__(self, other):
-        f = self.__copy__()
-        f._operations.append(('/r', other))
-        return f
-
-    def __floordiv__(self, other):
-        f = self.__copy__()
-        f._operations.append(('//', other))
-        return f
-
-    def __rfloordiv__(self, other):
-        f = self.__copy__()
-        f._operations.append(('//r', other))
-        return f
-
-    def __mod__(self, other):
-        f = self.__copy__()
-        f._operations.append(('%', other))
-        return f
-
-    def __rmod__(self, other):
-        f = self.__copy__()
-        f._operations.append(('%r', other))
-        return f
-
-    def __pow__(self, other):
-        f = self.__copy__()
-        f._operations.append(('**', other))
-        return f
-
-    def __rpow__(self, other):
-        f = self.__copy__()
-        f._operations.append(('**r', other))
-        return f
+def vars(names):
+    return [FunctionBuilder(name) for name in names]
 
 if __name__ == '__main__':
     import doctest
