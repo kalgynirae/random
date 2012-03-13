@@ -1,4 +1,5 @@
 import inspect
+from math import sqrt
 from numbers import Number
 
 class FunctionBuilder:
@@ -78,6 +79,51 @@ class FunctionBuilder:
 
 def vars(names):
     return [FunctionBuilder(name) for name in names]
+
+def sieve_of_eratosthenes(max):
+    """Return the prime numbers less than max"""
+    l = list(range(2, max))
+    stop = sqrt(max)
+    index = 0
+    n = l[index]
+    while n < stop:
+        m = n**2
+        while m < max:
+            try:
+                l.remove(m)
+            except ValueError:
+                pass
+            m += n
+        index += 1
+        n = l[index]
+    return l
+
+def primes(max=None):
+    """Generate prime numbers
+
+    Stolen from http://stackoverflow.com/a/568618
+
+    """
+    # A mapping of composites to primes witnessing their compositeness
+    D = {}
+    # The running integer that's checked for primeness
+    q = 2
+    while True:
+        if q not in D:
+            # q is a new prime. Mark its first multiple that isn't already
+            # marked (q*q).
+            yield q
+            D[q * q] = [q]
+        else:
+            # q is composite. D[q] is the list of primes that divide it. Since
+            # we've reached q, we no longer need it in the map, but we'll mark
+            # the next multiples of its witnesses to prepare for later numbers.
+            for p in D[q]:
+                D.setdefault(p + q, []).append(p)
+            del D[q]
+        q += 1
+        if max and q > max:
+            raise StopIteration()
 
 if __name__ == '__main__':
     import doctest
