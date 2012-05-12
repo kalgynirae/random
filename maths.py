@@ -123,7 +123,7 @@ def primes(max=None):
             del D[q]
         q += 1
         if max and q > max:
-            raise StopIteration()
+            raise StopIteration
 
 if __name__ == '__main__':
     import doctest
