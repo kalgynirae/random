@@ -1,3 +1,8 @@
+"""Usage: python crypto_solver.py GOAL NUMBER...
+Find an expression using the four basic operations and each NUMBER once
+that evaluates to GOAL.
+"""
+
 from itertools import permutations, product
 from operator import add, mul, sub, truediv
 import sys
@@ -25,19 +30,37 @@ def evaluate(tree, operators, values, return_expression=False):
     else:
         return values.pop()
 
-goal = int(sys.argv[1])
-numbers = [int(sys.argv[n]) for n in range(2,7)]
+def solve(goal, numbers, *, print_solutions=False):
+    solutions = []
+    number_sets = permutations(numbers)
+    seen_number_sets = set()
+    for ns in number_sets:
+        if ns not in seen_number_sets:
+            seen_number_sets.add(ns)
+            operator_sets = product(operators, repeat=len(numbers)-1)
+            for os in operator_sets:
+                tree_set = trees(len(numbers) - 1)
+                for tree in tree_set:
+                    try:
+                        result = evaluate(tree, list(os), list(ns))
+                    except ZeroDivisionError:
+                        pass
+                    else:
+                        if result == goal:
+                            e = evaluate(tree, list(os), list(ns),
+                                         return_expression=True)
+                            solutions.append(e)
+                            if print_solutions:
+                                print(e)
+    return solutions
 
-number_sets = permutations(numbers)
-for ns in number_sets:
-    operator_sets = product(operators, repeat=len(operators))
-    for os in operator_sets:
-        tree_set = trees(4)
-        for tree in tree_set:
-            try:
-                result = evaluate(tree, list(os), list(ns))
-            except ZeroDivisionError:
-                pass
-            else:
-                if result == goal:
-                    print(evaluate(tree, list(os), list(ns), True))
+if __name__ == '__main__':
+    try:
+        goal = int(sys.argv[1])
+        numbers = [int(sys.argv[n]) for n in range(2,len(sys.argv))]
+        if not numbers:
+            raise IndexError
+    except (ValueError, IndexError):
+        print(__doc__, file=sys.stderr, end='')
+    else:
+        solve(goal, numbers, print_solutions=True)
