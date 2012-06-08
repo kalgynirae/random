@@ -103,6 +103,9 @@ def primes(max=None):
 
     Stolen from http://stackoverflow.com/a/568618
 
+    >>> list(primes(5))
+    [2, 3, 5]
+
     """
     # A mapping of composites to primes witnessing their compositeness
     D = {}
@@ -124,6 +127,15 @@ def primes(max=None):
         q += 1
         if max and q > max:
             raise StopIteration
+
+def factors(x):
+    """Return all factors of n"""
+    factors = set()
+    for n in range(1, int(sqrt(x)) + 1):
+        if x % n == 0:
+            factors.add(n)
+            factors.add(x // n)
+    return factors
 
 if __name__ == '__main__':
     import doctest
