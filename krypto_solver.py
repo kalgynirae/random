@@ -1,4 +1,4 @@
-"""Usage: python crypto_solver.py GOAL NUMBER...
+"""Usage: python krypto_solver.py GOAL NUMBER...
 Find an expression using the four basic operations and each NUMBER once
 that evaluates to GOAL.
 """
@@ -37,7 +37,7 @@ def evaluate(tree, operators, values, return_expression=False):
         return values.pop()
 
 def solve(goal, numbers, *, print_solutions=False):
-    """Find solutions to a crypto puzzle."""
+    """Find solutions to a krypto puzzle."""
     solutions = []
     number_sets = permutations(numbers)
     seen_number_sets = set()
