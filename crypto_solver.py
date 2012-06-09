@@ -11,12 +11,18 @@ operators = [add, mul, sub, truediv]
 operator_symbols = dict(zip(operators, list('+*-/')))
 
 def trees(nodes):
+    """Return binary tree configurations with the given number of nodes.
+
+    The trees are nested lists which follow the format
+    [node, leftchild, rightchild].
+
+    """
     if nodes == 0:
-        yield None
+        yield 'leaf'
     else:
         for n in range(nodes):
             for p in product(trees(nodes - 1 - n), trees(n)):
-                yield tuple('o') + p
+                yield tuple('node') + p
 
 def evaluate(tree, operators, values, return_expression=False):
     if isinstance(tree, tuple):
@@ -31,6 +37,7 @@ def evaluate(tree, operators, values, return_expression=False):
         return values.pop()
 
 def solve(goal, numbers, *, print_solutions=False):
+    """Find solutions to a crypto puzzle."""
     solutions = []
     number_sets = permutations(numbers)
     seen_number_sets = set()
