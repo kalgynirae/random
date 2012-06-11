@@ -2,7 +2,6 @@
 Find an expression using the four basic operations and each NUMBER once
 that evaluates to GOAL.
 """
-
 from itertools import permutations, product
 from operator import add, mul, sub, truediv
 import sys
@@ -22,7 +21,7 @@ def trees(nodes):
     else:
         for n in range(nodes):
             for p in product(trees(nodes - 1 - n), trees(n)):
-                yield tuple('node') + p
+                yield ('node',) + p
 
 def evaluate(tree, operators, values, return_expression=False):
     if isinstance(tree, tuple):
