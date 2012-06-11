@@ -7,7 +7,7 @@ from itertools import permutations, product
 from operator import add, mul, sub, truediv
 import sys
 
-operators = [add, mul, sub, truediv]
+operators = (add, mul, sub, truediv)
 operator_symbols = dict(zip(operators, list('+*-/')))
 
 def trees(nodes):
