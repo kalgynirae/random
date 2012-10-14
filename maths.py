@@ -137,6 +137,14 @@ def factors(x):
             factors.add(x // n)
     return factors
 
+def prime_factors(n):
+    prime_generator = primes()
+    while n > 1:
+        p = next(prime_generator)
+        while n % p == 0:
+            n = n // p
+            yield p
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
