@@ -81,23 +81,24 @@ class FunctionBuilder:
 def vars(names):
     return [FunctionBuilder(name) for name in names]
 
-def sieve_of_eratosthenes(max):
-    """Return the prime numbers less than max"""
-    l = list(range(2, max))
-    stop = sqrt(max)
-    index = 0
-    n = l[index]
-    while n < stop:
-        m = n**2
-        while m < max:
-            try:
-                l.remove(m)
-            except ValueError:
-                pass
-            m += n
-        index += 1
-        n = l[index]
-    return l
+def sieve_of_eratosthenes(limit):
+    """Return the prime numbers less than limit
+
+    >>> sieve_of_eratosthenes(7)
+    [2, 3, 5]
+
+    """
+    # Start with a list of all integers up to max
+    l = list(range(limit))
+    l[1] = 0 # 1 is not prime
+    stop = sqrt(limit)
+    for n in l:
+        if n != 0:
+            m = n * n
+            while m < limit:
+                l[m] = 0
+                m += n
+    return [x for x in l if x != 0]
 
 def primes(max=None):
     """Generate prime numbers
