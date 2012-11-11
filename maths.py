@@ -1,4 +1,5 @@
 import inspect
+import itertools
 from math import sqrt
 from numbers import Number
 
@@ -101,32 +102,29 @@ def sieve_of_eratosthenes(max):
 def primes(max=None):
     """Generate prime numbers
 
-    Stolen from http://stackoverflow.com/a/568618
+    Stolen from
+    http://code.activestate.com/recipes/117119-sieve-of-eratosthenes/
 
     >>> list(primes(5))
     [2, 3, 5]
 
     """
-    # A mapping of composites to primes witnessing their compositeness
+    yield 2
     D = {}
-    # The running integer that's checked for primeness
-    q = 2
-    while True:
-        if q not in D:
-            # q is a new prime. Mark its first multiple that isn't already
-            # marked (q*q).
-            yield q
-            D[q * q] = [q]
-        else:
-            # q is composite. D[q] is the list of primes that divide it. Since
-            # we've reached q, we no longer need it in the map, but we'll mark
-            # the next multiples of its witnesses to prepare for later numbers.
-            for p in D[q]:
-                D.setdefault(p + q, []).append(p)
-            del D[q]
-        q += 1
+    for q in itertools.count(3, 2):
         if max and q > max:
             raise StopIteration
+        p = D.pop(q, None)
+        if p is None:
+            # q is prime
+            yield q
+            D[q * q] = 2 * q
+        else:
+            # q is composite
+            x = p + q
+            while x in D:
+                x += p
+            D[x] = p
 
 def factors(x):
     """Return all factors of n"""
