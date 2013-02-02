@@ -1,7 +1,5 @@
-import inspect
 import itertools
 from math import sqrt
-from numbers import Number
 
 class FunctionBuilder:
     """umm...
